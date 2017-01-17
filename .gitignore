@@ -20,20 +20,12 @@ repo/
 #
 # # Excel Backup File
 *.xlk
-#
-# PowerPoint temporary
-~$*.ppt*
-
-# Protegé catalog files
-*catalog*.xml
 
 # LaTex
-Abschlussvortrag.pdf
 *.acn
 *.acr
 *.alg
 *.aux
-*-blx.bib
 *.bbl
 *.blg
 *.brf
@@ -54,12 +46,9 @@ Abschlussvortrag.pdf
 *.maf
 *.mtc
 *.mtc1
-*.nav
 *.out
-thesis.pdf
+*.pdf
 *.ps
-*.run.xml
-*.snm
 *.synctex.gz
 *.tdo
 *.toc
@@ -73,9 +62,6 @@ target/
 # Mac
 .DS_Store
 
-# Windows
-Thumbs.db
-
 # dotNet
 obj/
 bin/
@@ -86,3 +72,10 @@ _ReSharper.*
 *.resharper
 *.suo
 *.cache
+
+# IntelliJ IDE
+.idea/*
+*.iws
+*.iml
+*.eml
+/out/
