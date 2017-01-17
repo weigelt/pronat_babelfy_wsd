@@ -1,0 +1,150 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>edu.kit.ipd.parse</groupId>
+		<artifactId>parse</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+	<artifactId>wsd</artifactId>
+	<repositories>
+		<repository>
+			<id>ipdNexus</id>
+			<name>IPD-Repository</name>
+			<url>http://bob.ipd.kit.edu/nexus/content/repositories/public/</url>
+		</repository>
+		<repository>
+<id>lhogie.i3s.maven.repo</id>
+<name>Luc Hogie Maven repository</name>
+<url>http://www.i3s.unice.fr/~hogie/maven_repository/</url>
+</repository>
+<repository>
+<id>backingdata-repo</id>
+<name>Backingdata repository</name>
+<url>http://backingdata.org/dri/library/mavenRepo/</url>
+</repository>
+	</repositories>
+	<dependencies>
+		<dependency>
+			<groupId>edu.kit.ipd.parse</groupId>
+			<artifactId>luna</artifactId>
+			<classifier>javadoc</classifier>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>edu.kit.ipd.parse</groupId>
+			<artifactId>luna</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.kohsuke.metainf-services</groupId>
+			<artifactId>metainf-services</artifactId>
+		</dependency>
+		<dependency>
+		
+      <groupId>commons-configuration</groupId>
+      <artifactId>commons-configuration</artifactId>
+      <version>1.5</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-core</artifactId>
+      <version>4.9.0</version>
+    </dependency>
+    <dependency>
+      <groupId>it.uniroma1.lcl</groupId>
+      <artifactId>jlt-utils</artifactId>
+      <version>2.2</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.2.4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-analyzers-common</artifactId>
+      <version>4.9.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+      <version>2.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-queryparser</artifactId>
+      <version>4.9.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <version>2.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>4.3.6</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <version>1.2</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>1.8</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>18.0</version>
+    </dependency>
+    <dependency>
+      <groupId>edu.mit</groupId>
+      <artifactId>jwi</artifactId>
+      <version>2.2.3</version>
+    </dependency>
+    <dependency>
+      <groupId>com.ibm.icu</groupId>
+      <artifactId>icu4j</artifactId>
+      <version>56.1</version>
+    </dependency>
+    <dependency>
+<groupId>babelnet.babelfy</groupId>
+<artifactId>babelfy-online</artifactId>
+<version>1.0</version>
+</dependency>
+<dependency>
+      <groupId>it.uniroma1.lcl</groupId>
+      <artifactId>babelnet</artifactId>
+      <version>3.7</version>
+    </dependency>
+		<dependency>
+			<groupId>edu.kit.ipd.parse</groupId>
+			<artifactId>graphBuilder</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>edu.kit.ipd.parse</groupId>
+			<artifactId>ShallowNLP</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	<groupId>edu.kit.ipd.parse</groupId>
+</project>
