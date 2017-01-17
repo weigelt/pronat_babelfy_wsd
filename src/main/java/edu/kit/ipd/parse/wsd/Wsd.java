@@ -1,6 +1,8 @@
 package edu.kit.ipd.parse.wsd;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -17,6 +19,7 @@ import edu.kit.ipd.parse.luna.graph.IGraph;
 import edu.kit.ipd.parse.luna.graph.INode;
 import edu.kit.ipd.parse.luna.graph.Pair;
 import edu.kit.ipd.parse.wsd.utils.GraphUtils;
+import it.uniroma1.lcl.babelfy.commons.BabelfyConfiguration;
 import it.uniroma1.lcl.babelfy.commons.BabelfyParameters;
 import it.uniroma1.lcl.babelfy.commons.BabelfyParameters.MCS;
 import it.uniroma1.lcl.babelfy.commons.BabelfyParameters.MatchingType;
@@ -28,6 +31,7 @@ import it.uniroma1.lcl.babelfy.commons.PosTag;
 import it.uniroma1.lcl.babelfy.commons.annotation.SemanticAnnotation;
 import it.uniroma1.lcl.babelfy.core.Babelfy;
 import it.uniroma1.lcl.babelnet.BabelNet;
+import it.uniroma1.lcl.babelnet.BabelNetConfiguration;
 import it.uniroma1.lcl.babelnet.BabelSynset;
 import it.uniroma1.lcl.babelnet.BabelSynsetID;
 import it.uniroma1.lcl.babelnet.InvalidBabelSynsetIDException;
@@ -60,6 +64,17 @@ public class Wsd extends AbstractAgent {
 	public void init() {
 		setId(ID);
 		createPOSTags();
+		try {
+			BabelfyConfiguration bfc = BabelfyConfiguration.getInstance();
+			BabelNetConfiguration bc = BabelNetConfiguration.getInstance();
+			bfc.setConfigurationFile(new File(Wsd.class.getResource("/config/babelfy.properties").toURI().getPath()));
+			bfc.setRFkey("ecb0a86a-951a-428f-993c-137953bab067");
+			bc.setConfigurationFile(new File(Wsd.class.getResource("/config/babelnet.properties").toURI().getPath()));
+			bc.setBasePath(Wsd.class.getResource("/config/").toURI().getPath());
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		bn = BabelNet.getInstance();
 		BabelfyParameters bp = new BabelfyParameters();
 		bp.setAnnotationResource(SemanticAnnotationResource.WN);
@@ -180,7 +195,7 @@ public class Wsd extends AbstractAgent {
 
 	/**
 	 * Creates a mapping between WordNet POS Tags (simple) and the POS Tags used
-	 * in this tagger (Penn Treebank tagset).
+	 * in Penn Treebank tagset.
 	 * 
 	 * @return a HashMap mapping composite Tags (e.g. JJ, NNP, VB, etc.) with
 	 *         simple Tags (e.g. Adjective, Noun, Verb, etc.)
