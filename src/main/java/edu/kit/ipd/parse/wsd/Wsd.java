@@ -55,6 +55,8 @@ public class Wsd extends AbstractAgent {
 
 	private HashMap<String, PosTag> posTags;
 
+	private HashMap<String, BabelSynset> synsets;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -84,8 +86,8 @@ public class Wsd extends AbstractAgent {
 		bp.setMatchingType(MatchingType.PARTIAL_MATCHING);
 		bp.setMCS(MCS.OFF);
 		bp.setScoredCandidates(ScoredCandidates.ALL);
-		bp.setThreshold(0.5d);
 		bfy = new Babelfy(bp);
+		synsets = new HashMap<>();
 	}
 
 	/*
@@ -109,20 +111,55 @@ public class Wsd extends AbstractAgent {
 		int[] currentToken = new int[] { -1, -1 };
 		List<INode> nodes = null;
 		List<Pair<String, Double>> senses = null;
+		List<Pair<String, Double>> sequenceSenses = new ArrayList<>();
+		int longestSequence = 0;
 		for (SemanticAnnotation semanticAnnotation : bfyAnnotations) {
-			if (!(semanticAnnotation.getTokenOffsetFragment().getStart() == currentToken[0]
-					&& semanticAnnotation.getTokenOffsetFragment().getEnd() == currentToken[1])) {
+			if (!(semanticAnnotation.getTokenOffsetFragment().getStart() == currentToken[0])) {
+				if (semanticAnnotation.getTokenOffsetFragment().getStart() <= currentToken[1] && longestSequence > 0) {
+					sequenceSenses.addAll(senses);
+				} else {
+					sequenceSenses = new ArrayList<>();
+				}
 				if (senses != null && nodes != null) {
 					writeToNodes(nodes, senses, graph);
 				}
+				longestSequence = 0;
 				nodes = getNodesForAnnotation(semanticAnnotation, utterance);
 				senses = new ArrayList<>();
 			}
 			try {
-				BabelSynset synset = bn.getSynset(new BabelSynsetID(semanticAnnotation.getBabelSynsetID()));
-				senses.add(new Pair<String, Double>(synset.getWordNetOffsets().get(0).getID(), semanticAnnotation.getScore()));
-				currentToken[0] = semanticAnnotation.getTokenOffsetFragment().getStart();
-				currentToken[1] = semanticAnnotation.getTokenOffsetFragment().getEnd();
+				boolean relevant = false;
+				if ((semanticAnnotation.getTokenOffsetFragment().getEnd() - semanticAnnotation.getTokenOffsetFragment().getStart()) > 0) {
+					if (longestSequence == 0) {
+						Collections.sort(senses, new SenseComparator());
+						Collections.reverse(senses);
+						if (!(senses.get(0).getRight() - semanticAnnotation.getScore() > 0.2d) || (semanticAnnotation.getScore() > 0.3d)) {
+							senses = new ArrayList<>();
+							relevant = true;
+							longestSequence++;
+						}
+					} else if ((semanticAnnotation.getScore() > 0.3d)) {
+						relevant = true;
+						longestSequence++;
+					}
+				} else if (semanticAnnotation.getScore() > 0.3d) {
+					relevant = true;
+				}
+				if (relevant && sequenceSenses.isEmpty()) {
+
+					BabelSynset synset;
+					String synsetID = semanticAnnotation.getBabelSynsetID();
+					if (synsets.containsKey(synsetID)) {
+						synset = synsets.get(synsetID);
+					} else {
+						synset = bn.getSynset(new BabelSynsetID(synsetID));
+						synsets.put(synsetID, synset);
+					}
+
+					senses.add(new Pair<String, Double>(synset.getWordNetOffsets().get(0).getID(), semanticAnnotation.getScore()));
+					currentToken[0] = semanticAnnotation.getTokenOffsetFragment().getStart();
+					currentToken[1] = semanticAnnotation.getTokenOffsetFragment().getEnd();
+				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -132,20 +169,15 @@ public class Wsd extends AbstractAgent {
 			}
 
 		}
-		if (senses != null && nodes != null) {
+		if (senses != null && nodes != null)
+
+		{
 			writeToNodes(nodes, senses, graph);
 		}
 	}
 
 	private void writeToNodes(List<INode> nodes, List<Pair<String, Double>> senses, IGraph graph) {
-		Collections.sort(senses, new Comparator<Pair<String, Double>>() {
-
-			@Override
-			public int compare(Pair<String, Double> o1, Pair<String, Double> o2) {
-
-				return Double.compare(o1.getRight(), o2.getRight());
-			}
-		});
+		Collections.sort(senses, new SenseComparator());
 		Collections.reverse(senses);
 		if (graph.hasNodeType("token")) {
 			if (!graph.getNodeType("token").getAllTypeAttributesTypesAndNames()
@@ -225,6 +257,15 @@ public class Wsd extends AbstractAgent {
 		posTags.put("VBZ", PosTag.VERB);
 
 		return posTags;
+	}
+
+	private class SenseComparator implements Comparator<Pair<String, Double>> {
+
+		@Override
+		public int compare(Pair<String, Double> o1, Pair<String, Double> o2) {
+			return Double.compare(o1.getRight(), o2.getRight());
+		}
+
 	}
 
 }

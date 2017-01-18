@@ -1,6 +1,7 @@
 package edu.kit.ipd.parse.wsd;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import edu.kit.ipd.parse.graphBuilder.GraphBuilder;
@@ -29,6 +30,7 @@ public class WsdTest {
 
 	}
 
+	@Ignore
 	@Test
 	public void StringTest() throws PipelineStageException, MissingDataException {
 		ppd = new PrePipelineData();
