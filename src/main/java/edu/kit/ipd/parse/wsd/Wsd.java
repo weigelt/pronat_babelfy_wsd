@@ -38,6 +38,9 @@ import it.uniroma1.lcl.babelnet.InvalidBabelSynsetIDException;
 import it.uniroma1.lcl.jlt.util.Language;
 
 /**
+ * Agent to add Word Sense Disambiguation information to the identified nouns
+ * from the babelfy toolkit
+ * 
  * @author Tobias Hey
  *
  */
@@ -70,7 +73,6 @@ public class Wsd extends AbstractAgent {
 			BabelfyConfiguration bfc = BabelfyConfiguration.getInstance();
 			BabelNetConfiguration bc = BabelNetConfiguration.getInstance();
 			bfc.setConfigurationFile(new File(Wsd.class.getResource("/config/babelfy.properties").toURI().getPath()));
-			bfc.setRFkey("ecb0a86a-951a-428f-993c-137953bab067");
 			bc.setConfigurationFile(new File(Wsd.class.getResource("/config/babelnet.properties").toURI().getPath()));
 			bc.setBasePath(Wsd.class.getResource("/config/").toURI().getPath());
 		} catch (URISyntaxException e) {
@@ -108,70 +110,66 @@ public class Wsd extends AbstractAgent {
 		List<BabelfyToken> bfTokens = prepareInput(utterance);
 
 		List<SemanticAnnotation> bfyAnnotations = bfy.babelfy(bfTokens, Language.EN);
-		int[] currentToken = new int[] { -1, -1 };
+		int[] previousToken = new int[] { -1, -1 };
 		List<INode> nodes = null;
 		List<Pair<String, Double>> senses = null;
 		List<Pair<String, Double>> sequenceSenses = new ArrayList<>();
-		int longestSequence = 0;
+
 		for (SemanticAnnotation semanticAnnotation : bfyAnnotations) {
-			if (!(semanticAnnotation.getTokenOffsetFragment().getStart() == currentToken[0])) {
-				if (semanticAnnotation.getTokenOffsetFragment().getStart() <= currentToken[1] && longestSequence > 0) {
-					sequenceSenses.addAll(senses);
+			// if change in Token range 
+			if (!(semanticAnnotation.getTokenOffsetFragment().getEnd() == previousToken[1])
+					|| !(semanticAnnotation.getTokenOffsetFragment().getStart() == previousToken[0])) {
+				// if change from sequence to single Token p.e. (10,11) -> (11,11) save sequence tokens else reset them
+				if (semanticAnnotation.getTokenOffsetFragment().getEnd() == previousToken[1]) {
+					sequenceSenses = senses;
 				} else {
 					sequenceSenses = new ArrayList<>();
 				}
+				// if change write previous senses
 				if (senses != null && nodes != null) {
 					writeToNodes(nodes, senses, graph);
 				}
-				longestSequence = 0;
 				nodes = getNodesForAnnotation(semanticAnnotation, utterance);
 				senses = new ArrayList<>();
 			}
-			try {
-				boolean relevant = false;
-				if ((semanticAnnotation.getTokenOffsetFragment().getEnd() - semanticAnnotation.getTokenOffsetFragment().getStart()) > 0) {
-					if (longestSequence == 0) {
-						Collections.sort(senses, new SenseComparator());
-						Collections.reverse(senses);
-						if (!(senses.get(0).getRight() - semanticAnnotation.getScore() > 0.2d) || (semanticAnnotation.getScore() > 0.3d)) {
-							senses = new ArrayList<>();
-							relevant = true;
-							longestSequence++;
+
+			// if sequence tokens present use them as sense
+			if (!sequenceSenses.isEmpty()) {
+				senses = sequenceSenses;
+			} else {
+				// if score is higher than 30% or sense spans over several tokens (sequence)
+				if (semanticAnnotation.getScore() > 0.3d || (semanticAnnotation.getTokenOffsetFragment().getEnd()
+						- semanticAnnotation.getTokenOffsetFragment().getStart()) > 0) {
+					try {
+						BabelSynset synset;
+						String synsetID = semanticAnnotation.getBabelSynsetID();
+						if (synsetID.endsWith("n")) {
+
+							if (synsets.containsKey(synsetID)) {
+								synset = synsets.get(synsetID);
+							} else {
+
+								synset = bn.getSynset(new BabelSynsetID(synsetID));
+								synsets.put(synsetID, synset);
+							}
+
+							senses.add(new Pair<String, Double>(synset.getWordNetOffsets().get(0).getID(), semanticAnnotation.getScore()));
 						}
-					} else if ((semanticAnnotation.getScore() > 0.3d)) {
-						relevant = true;
-						longestSequence++;
-					}
-				} else if (semanticAnnotation.getScore() > 0.3d) {
-					relevant = true;
-				}
-				if (relevant && sequenceSenses.isEmpty()) {
-
-					BabelSynset synset;
-					String synsetID = semanticAnnotation.getBabelSynsetID();
-					if (synsets.containsKey(synsetID)) {
-						synset = synsets.get(synsetID);
-					} else {
-						synset = bn.getSynset(new BabelSynsetID(synsetID));
-						synsets.put(synsetID, synset);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (InvalidBabelSynsetIDException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
 
-					senses.add(new Pair<String, Double>(synset.getWordNetOffsets().get(0).getID(), semanticAnnotation.getScore()));
-					currentToken[0] = semanticAnnotation.getTokenOffsetFragment().getStart();
-					currentToken[1] = semanticAnnotation.getTokenOffsetFragment().getEnd();
 				}
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InvalidBabelSynsetIDException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
-
+			previousToken[0] = semanticAnnotation.getTokenOffsetFragment().getStart();
+			previousToken[1] = semanticAnnotation.getTokenOffsetFragment().getEnd();
 		}
-		if (senses != null && nodes != null)
 
-		{
+		if (senses != null && nodes != null) {
 			writeToNodes(nodes, senses, graph);
 		}
 	}
@@ -180,8 +178,7 @@ public class Wsd extends AbstractAgent {
 		Collections.sort(senses, new SenseComparator());
 		Collections.reverse(senses);
 		if (graph.hasNodeType("token")) {
-			if (!graph.getNodeType("token").getAllTypeAttributesTypesAndNames()
-					.contains(new Pair<String, String>("List<Pair<String, Double>>", "wsdSenses"))) {
+			if (!graph.getNodeType("token").containsAttribute("wsdSenses", "List<Pair<String, Double>>")) {
 				graph.getNodeType("token").addAttributeToType("List<Pair<String, Double>>", "wsdSenses");
 			}
 			for (INode node : nodes) {
