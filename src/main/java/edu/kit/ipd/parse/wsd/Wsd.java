@@ -40,7 +40,7 @@ import it.uniroma1.lcl.jlt.util.Language;
 /**
  * Agent to add Word Sense Disambiguation information to the identified nouns
  * from the babelfy toolkit
- * 
+ *
  * @author Tobias Hey
  *
  */
@@ -62,7 +62,7 @@ public class Wsd extends AbstractAgent {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see edu.kit.ipd.parse.luna.agent.LunaObserver#init()
 	 */
 	@Override
@@ -94,7 +94,7 @@ public class Wsd extends AbstractAgent {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see edu.kit.ipd.parse.luna.agent.AbstractAgent#exec()
 	 */
 	@Override
@@ -116,7 +116,7 @@ public class Wsd extends AbstractAgent {
 		List<Pair<String, Double>> sequenceSenses = new ArrayList<>();
 
 		for (SemanticAnnotation semanticAnnotation : bfyAnnotations) {
-			// if change in Token range 
+			// if change in Token range
 			if (!(semanticAnnotation.getTokenOffsetFragment().getEnd() == previousToken[1])
 					|| !(semanticAnnotation.getTokenOffsetFragment().getStart() == previousToken[0])) {
 				// if change from sequence to single Token p.e. (10,11) -> (11,11) save sequence tokens else reset them
@@ -138,8 +138,8 @@ public class Wsd extends AbstractAgent {
 				senses = sequenceSenses;
 			} else {
 				// if score is higher than 30% or sense spans over several tokens (sequence)
-				if (semanticAnnotation.getScore() > 0.3d || (semanticAnnotation.getTokenOffsetFragment().getEnd()
-						- semanticAnnotation.getTokenOffsetFragment().getStart()) > 0) {
+				if (semanticAnnotation.getScore() > 0.3d || semanticAnnotation.getTokenOffsetFragment().getEnd()
+						- semanticAnnotation.getTokenOffsetFragment().getStart() > 0) {
 					try {
 						BabelSynset synset;
 						String synsetID = semanticAnnotation.getBabelSynsetID();
@@ -178,8 +178,8 @@ public class Wsd extends AbstractAgent {
 		Collections.sort(senses, new SenseComparator());
 		Collections.reverse(senses);
 		if (graph.hasNodeType("token")) {
-			if (!graph.getNodeType("token").containsAttribute("wsdSenses", "List<Pair<String, Double>>")) {
-				graph.getNodeType("token").addAttributeToType("List<Pair<String, Double>>", "wsdSenses");
+			if (!graph.getNodeType("token").containsAttribute("wsdSenses", senses.getClass().getName())) {
+				graph.getNodeType("token").addAttributeToType(senses.getClass().getName(), "wsdSenses");
 			}
 			for (INode node : nodes) {
 				node.setAttributeValue("wsdSenses", senses);
@@ -198,7 +198,7 @@ public class Wsd extends AbstractAgent {
 				BabelfyToken token = new BabelfyToken((String) iNode.getAttributeValue("value"));
 				if (iNode.getAttributeNames().contains("pos") && !iNode.getAttributeValue("pos").equals("")) {
 					if (posTags.containsKey(iNode.getAttributeValue("pos"))) {
-						token.setPostag(posTags.get((String) iNode.getAttributeValue("pos")));
+						token.setPostag(posTags.get(iNode.getAttributeValue("pos")));
 					} else {
 						token.setPostag(PosTag.OTHER);
 						token.setLanguage(Language.EN);
@@ -225,7 +225,7 @@ public class Wsd extends AbstractAgent {
 	/**
 	 * Creates a mapping between WordNet POS Tags (simple) and the POS Tags used
 	 * in Penn Treebank tagset.
-	 * 
+	 *
 	 * @return a HashMap mapping composite Tags (e.g. JJ, NNP, VB, etc.) with
 	 *         simple Tags (e.g. Adjective, Noun, Verb, etc.)
 	 */
