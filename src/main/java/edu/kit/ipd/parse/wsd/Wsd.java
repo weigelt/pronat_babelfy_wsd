@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 import org.kohsuke.MetaInfServices;
 import org.slf4j.Logger;
@@ -182,7 +183,9 @@ public class Wsd extends AbstractAgent {
 				graph.getNodeType("token").addAttributeToType(senses.getClass().getName(), "wsdSenses");
 			}
 			for (INode node : nodes) {
-				node.setAttributeValue("wsdSenses", senses);
+				if (!Objects.equals(node.getAttributeValue("wsdSenses"), senses)) {
+					node.setAttributeValue("wsdSenses", senses);
+				}
 			}
 
 		} else {
