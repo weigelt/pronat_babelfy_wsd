@@ -2,7 +2,7 @@ package edu.kit.ipd.parse.wsd;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.commons.io.FileUtils;
 import org.kohsuke.MetaInfServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,16 +71,34 @@ public class Wsd extends AbstractAgent {
 	public void init() {
 		setId(ID);
 		createPOSTags();
+		//		try {
+		BabelfyConfiguration bfc = null;
+		BabelNetConfiguration bc = null;
+		InputStream isFy = Wsd.class.getResourceAsStream("/config/babelfy.properties");
+		InputStream isNet = Wsd.class.getResourceAsStream("/config/babelnet.properties");
+		File tempFy;
+		File tempNet;
 		try {
-			BabelfyConfiguration bfc = BabelfyConfiguration.getInstance();
-			BabelNetConfiguration bc = BabelNetConfiguration.getInstance();
-			bfc.setConfigurationFile(new File(Wsd.class.getResource("/config/babelfy.properties").toURI().getPath()));
-			bc.setConfigurationFile(new File(Wsd.class.getResource("/config/babelnet.properties").toURI().getPath()));
-			bc.setBasePath(Wsd.class.getResource("/config/").toURI().getPath());
-		} catch (URISyntaxException e) {
+			tempFy = File.createTempFile("tempFy", ".tmp");
+			tempNet = File.createTempFile("tempNet", ".tmp");
+			FileUtils.copyInputStreamToFile(isFy, tempFy);
+			FileUtils.copyInputStreamToFile(isNet, tempNet);
+			bfc.CONFIG_FILE = tempFy.getPath();
+			bc.CONFIG_FILE = tempNet.getPath();
+			bfc = BabelfyConfiguration.getInstance();
+			bc = BabelNetConfiguration.getInstance();
+			bfc.setConfigurationFile(tempFy);
+			bc.setConfigurationFile(tempNet);
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+		//			bc.setBasePath(Wsd.class.getResource("/config/").toURI().getPath());
+		//		} catch (URISyntaxException e) {
+		//			// TODO Auto-generated catch block
+		//			e.printStackTrace();
+		//		}
 		bn = BabelNet.getInstance();
 		BabelfyParameters bp = new BabelfyParameters();
 		bp.setAnnotationResource(SemanticAnnotationResource.WN);
