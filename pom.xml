@@ -6,6 +6,7 @@
 		<artifactId>parse</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
+	<groupId>edu.kit.ipd.parse</groupId>
 	<artifactId>wsd</artifactId>
 	<version>0.0.2-SNAPSHOT</version>
 	<repositories>
@@ -147,5 +148,7 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	<groupId>edu.kit.ipd.parse</groupId>
+	<properties>
+		<parse_bundle.directory>../parse_bundle</parse_bundle.directory>
+	</properties>
 </project>
