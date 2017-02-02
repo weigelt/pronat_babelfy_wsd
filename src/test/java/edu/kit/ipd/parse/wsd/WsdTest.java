@@ -45,7 +45,7 @@ public class WsdTest {
 		wsd.setGraph(ppd.getGraph());
 		logger.debug("Runnning WSD");
 		wsd.exec();
-
+		System.out.println(wsd.getGraph().showGraph());
 	}
 
 }
