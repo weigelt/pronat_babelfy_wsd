@@ -132,8 +132,8 @@ public class Wsd extends AbstractAgent {
 		List<SemanticAnnotation> bfyAnnotations = bfy.babelfy(bfTokens, Language.EN);
 		int[] previousToken = new int[] { -1, -1 };
 		List<INode> nodes = null;
-		List<Pair<String, Double>> senses = null;
-		List<Pair<String, Double>> sequenceSenses = new ArrayList<>();
+		List<Pair<BabelSynset, Double>> senses = null;
+		List<Pair<BabelSynset, Double>> sequenceSenses = new ArrayList<>();
 
 		for (SemanticAnnotation semanticAnnotation : bfyAnnotations) {
 			// if change in Token range
@@ -173,7 +173,7 @@ public class Wsd extends AbstractAgent {
 								synsets.put(synsetID, synset);
 							}
 
-							senses.add(new Pair<String, Double>(synset.getWordNetOffsets().get(0).getID(), semanticAnnotation.getScore()));
+							senses.add(new Pair<BabelSynset, Double>(synset, semanticAnnotation.getScore()));
 						}
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
@@ -194,21 +194,56 @@ public class Wsd extends AbstractAgent {
 		}
 	}
 
-	private void writeToNodes(List<INode> nodes, List<Pair<String, Double>> senses, IGraph graph) {
-		Collections.sort(senses, new SenseComparator());
-		Collections.reverse(senses);
-		if (graph.hasNodeType("token")) {
-			if (!graph.getNodeType("token").containsAttribute("wsdSenses", senses.getClass().getName())) {
-				graph.getNodeType("token").addAttributeToType(senses.getClass().getName(), "wsdSenses");
+	private void writeToNodes(List<INode> nodes, List<Pair<BabelSynset, Double>> senses, IGraph graph) {
+		if (!senses.isEmpty()) {
+			Collections.sort(senses, new SenseComparator());
+			Collections.reverse(senses);
+			List<Pair<String, Double>> results = new ArrayList<>();
+			for (Pair<BabelSynset, Double> pair : senses) {
+				results.add(new Pair<String, Double>(pair.getLeft().getId().getID(), pair.getRight()));
 			}
-			for (INode node : nodes) {
-				if (!Objects.equals(node.getAttributeValue("wsdSenses"), senses)) {
-					node.setAttributeValue("wsdSenses", senses);
+			if (graph.hasNodeType("token")) {
+				if (!graph.getNodeType("token").containsAttribute("wnSynsetID", "String")) {
+					graph.getNodeType("token").addAttributeToType("String", "wnSynsetID");
 				}
-			}
+				if (!graph.getNodeType("token").containsAttribute("bnSynsetID", "String")) {
+					graph.getNodeType("token").addAttributeToType("String", "bnSynsetID");
+				}
+				if (!graph.getNodeType("token").containsAttribute("bnScore", "Double")) {
+					graph.getNodeType("token").addAttributeToType("Double", "bnScore");
+				}
+				if (!graph.getNodeType("token").containsAttribute("bnGloss", "String")) {
+					graph.getNodeType("token").addAttributeToType("String", "bnGloss");
+				}
+				if (!graph.getNodeType("token").containsAttribute("bfyResults", results.getClass().getName())) {
+					graph.getNodeType("token").addAttributeToType(results.getClass().getName(), "bfyResults");
+				}
+				for (INode node : nodes) {
+					if (!Objects.equals(node.getAttributeValue("wnSynsetID"), senses.get(0).getLeft().getWordNetOffsets().get(0).getID())) {
+						node.setAttributeValue("wnSynsetID", senses.get(0).getLeft().getWordNetOffsets().get(0).getID());
+					}
+					if (!Objects.equals(node.getAttributeValue("bnSynsetID"), senses.get(0).getLeft().getId().getID())) {
+						node.setAttributeValue("bnSynsetID", senses.get(0).getLeft().getId().getID());
+					}
+					if (!Objects.equals(node.getAttributeValue("bnScore"), senses.get(0).getRight())) {
+						node.setAttributeValue("bnScore", senses.get(0).getRight());
+					}
+					if (!Objects.equals(node.getAttributeValue("bfyResults"), results)) {
+						node.setAttributeValue("bfyResults", results);
+					}
+					try {
+						if (!Objects.equals(node.getAttributeValue("bnGloss"), senses.get(0).getLeft().getGlosses().get(0).getGloss())) {
+							node.setAttributeValue("bnGloss", senses.get(0).getLeft().getGlosses().get(0).getGloss());
+						}
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
 
-		} else {
-			logger.error("Graph has no Token Nodes!");
+			} else {
+				logger.error("Graph has no Token Nodes!");
+			}
 		}
 
 	}
@@ -278,10 +313,10 @@ public class Wsd extends AbstractAgent {
 		return posTags;
 	}
 
-	private class SenseComparator implements Comparator<Pair<String, Double>> {
+	private class SenseComparator implements Comparator<Pair<BabelSynset, Double>> {
 
 		@Override
-		public int compare(Pair<String, Double> o1, Pair<String, Double> o2) {
+		public int compare(Pair<BabelSynset, Double> o1, Pair<BabelSynset, Double> o2) {
 			return Double.compare(o1.getRight(), o2.getRight());
 		}
 
