@@ -228,7 +228,17 @@ public class Wsd extends AbstractAgent {
 					if (!Objects.equals(node.getAttributeValue("bnScore"), senses.get(0).getRight())) {
 						node.setAttributeValue("bnScore", senses.get(0).getRight());
 					}
-					if (!Objects.equals(node.getAttributeValue("bfyResults"), results)) {
+					if (node.getAttributeValue("bfyResults") != null) {
+						@SuppressWarnings("unchecked")
+						List<Pair<String, Double>> graphResults = (List<Pair<String, Double>>) node.getAttributeValue("bfyResults");
+						if (results != null) {
+							if (!resultsEquals(results, graphResults)) {
+								node.setAttributeValue("bfyResults", results);
+							}
+						} else {
+							node.setAttributeValue("bfyResults", results);
+						}
+					} else {
 						node.setAttributeValue("bfyResults", results);
 					}
 					try {
@@ -246,6 +256,25 @@ public class Wsd extends AbstractAgent {
 			}
 		}
 
+	}
+
+	private boolean resultsEquals(List<Pair<String, Double>> first, List<Pair<String, Double>> second) {
+		if (first.size() != second.size()) {
+			return false;
+		}
+		for (Pair<String, Double> pairSecond : second) {
+			boolean match = false;
+			for (Pair<String, Double> pairFirst : first) {
+				if (pairFirst.getLeft().equals(pairSecond.getLeft())
+						&& Math.abs(pairFirst.getRight() - pairSecond.getRight()) < 0.0000001d) {
+					match = true;
+				}
+			}
+			if (!match) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private List<BabelfyToken> prepareInput(List<INode> utterance) {
