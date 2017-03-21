@@ -119,7 +119,6 @@ public class Wsd extends AbstractAgent {
 	 */
 	@Override
 	public void exec() {
-		IGraph graph = getGraph();
 		List<INode> utterance = new ArrayList<INode>();
 		try {
 			utterance = GraphUtils.getNodesOfUtterance(graph);
