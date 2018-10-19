@@ -4,17 +4,21 @@
 	<parent>
 		<groupId>edu.kit.ipd.parse</groupId>
 		<artifactId>parse</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>0.0.2</version>
 	</parent>
-	<groupId>edu.kit.ipd.parse</groupId>
 	<artifactId>wsd</artifactId>
 	<version>0.0.2-SNAPSHOT</version>
 	<repositories>
 		<repository>
-			<id>ipdNexus</id>
-			<name>IPD-Repository</name>
-			<url>http://bob.ipd.kit.edu/nexus/content/repositories/public/</url>
-		</repository>
+        	<id>ipdNexus-public-releases</id>
+        	<name>IPD-Repository</name>
+            <url>http://bob.ipd.kit.edu/nexus/repository/maven-public-releases</url>
+        </repository>
+        <repository>
+            <id>ipdNexus-public-snapshots</id>
+            <name>IPD-Repository</name>
+            <url>http://bob.ipd.kit.edu/nexus/repository/maven-public-snapshots</url>
+        </repository>
 		<repository>
 			<id>lhogie.i3s.maven.repo</id>
 			<name>Luc Hogie Maven repository</name>
@@ -31,7 +35,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.3.1</version>
 				<configuration>
 					<outputDirectory>${parse_bundle.directory}/plugins</outputDirectory>
 				</configuration>
@@ -39,7 +42,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
-				<version>3.0.0</version>
 				<executions>
 					<execution>
 						<id>copy-dependencies</id>
