@@ -19,16 +19,6 @@
             <name>IPD-Repository</name>
             <url>http://bob.ipd.kit.edu/nexus/repository/maven-public-snapshots</url>
         </repository>
-		<repository>
-			<id>lhogie.i3s.maven.repo</id>
-			<name>Luc Hogie Maven repository</name>
-			<url>http://www.i3s.unice.fr/~hogie/maven_repository/</url>
-		</repository>
-		<repository>
-			<id>backingdata-repo</id>
-			<name>Backingdata repository</name>
-			<url>http://backingdata.org/dri/library/mavenRepo/</url>
-		</repository>
 	</repositories>
 	<build>
 		<plugins>
