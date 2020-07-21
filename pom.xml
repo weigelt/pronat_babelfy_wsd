@@ -18,8 +18,8 @@
             <id>ipdNexus-public-snapshots</id>
             <name>IPD-Repository</name>
             <url>http://bob.ipd.kit.edu/nexus/repository/maven-public-snapshots</url>
-    </repository>
-    </repositories>
+        </repository>
+	</repositories>
 	<build>
 		<plugins>
 			<plugin>
@@ -82,75 +82,19 @@
 			<artifactId>metainf-services</artifactId>
 		</dependency>
 		<dependency>
-
-			<groupId>commons-configuration</groupId>
-			<artifactId>commons-configuration</artifactId>
-			<version>1.5</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-core</artifactId>
-			<version>4.9.0</version>
-		</dependency>
-		<dependency>
 			<groupId>it.uniroma1.lcl</groupId>
 			<artifactId>jlt-utils</artifactId>
 			<version>2.2</version>
 		</dependency>
 		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-			<version>2.2.4</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-analyzers-common</artifactId>
-			<version>4.9.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-api</artifactId>
-			<version>2.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-queryparser</artifactId>
-			<version>4.9.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-			<version>2.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<version>4.3.6</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-logging</groupId>
-			<artifactId>commons-logging</artifactId>
-			<version>1.2</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-codec</groupId>
-			<artifactId>commons-codec</artifactId>
-			<version>1.8</version>
-		</dependency>
-		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>18.0</version>
+			<version>27.1-jre</version>
 		</dependency>
 		<dependency>
 			<groupId>edu.mit</groupId>
 			<artifactId>jwi</artifactId>
 			<version>2.2.3</version>
-		</dependency>
-		<dependency>
-			<groupId>com.ibm.icu</groupId>
-			<artifactId>icu4j</artifactId>
-			<version>56.1</version>
 		</dependency>
 		<dependency>
 			<groupId>babelnet.babelfy</groupId>
