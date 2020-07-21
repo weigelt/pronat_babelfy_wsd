@@ -7,7 +7,7 @@
 		<version>0.0.4</version>
 	</parent>
 	<artifactId>wsd</artifactId>
-	<version>0.0.3</version>
+	<version>0.0.3-SNAPSHOT</version>
 	<repositories>
 		<repository>
         	<id>ipdNexus-public-releases</id>
@@ -18,18 +18,8 @@
             <id>ipdNexus-public-snapshots</id>
             <name>IPD-Repository</name>
             <url>http://bob.ipd.kit.edu/nexus/repository/maven-public-snapshots</url>
-        </repository>
-		<repository>
-			<id>lhogie.i3s.maven.repo</id>
-			<name>Luc Hogie Maven repository</name>
-			<url>http://www.i3s.unice.fr/~hogie/maven_repository/</url>
-		</repository>
-		<repository>
-			<id>backingdata-repo</id>
-			<name>Backingdata repository</name>
-			<url>http://backingdata.org/dri/library/mavenRepo/</url>
-		</repository>
-	</repositories>
+    </repository>
+    </repositories>
 	<build>
 		<plugins>
 			<plugin>
