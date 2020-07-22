@@ -62,6 +62,10 @@ public class Wsd extends AbstractAgent {
 
 	private HashMap<String, BabelSynset> synsets;
 
+	public Wsd() {
+		setId(ID);
+	}
+
 	/*
 	 * (non-Javadoc)
 	 *
@@ -69,7 +73,7 @@ public class Wsd extends AbstractAgent {
 	 */
 	@Override
 	public void init() {
-		setId(ID);
+		//		setId(ID);
 		createPOSTags();
 		//		try {
 		BabelfyConfiguration bfc = null;
@@ -308,11 +312,11 @@ public class Wsd extends AbstractAgent {
 	}
 
 	/**
-	 * Creates a mapping between WordNet POS Tags (simple) and the POS Tags used
-	 * in Penn Treebank tagset.
+	 * Creates a mapping between WordNet POS Tags (simple) and the POS Tags used in
+	 * Penn Treebank tagset.
 	 *
-	 * @return a HashMap mapping composite Tags (e.g. JJ, NNP, VB, etc.) with
-	 *         simple Tags (e.g. Adjective, Noun, Verb, etc.)
+	 * @return a HashMap mapping composite Tags (e.g. JJ, NNP, VB, etc.) with simple
+	 *         Tags (e.g. Adjective, Noun, Verb, etc.)
 	 */
 	private HashMap<String, PosTag> createPOSTags() {
 		posTags = new HashMap<String, PosTag>();
