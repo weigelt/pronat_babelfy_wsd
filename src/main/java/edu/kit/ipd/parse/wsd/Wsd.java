@@ -44,6 +44,7 @@ import it.uniroma1.lcl.jlt.util.Language;
  * from the babelfy toolkit
  *
  * @author Tobias Hey
+ * @author Sebastian Weigelt
  *
  */
 
@@ -123,77 +124,88 @@ public class Wsd extends AbstractAgent {
 	 */
 	@Override
 	public void exec() {
-		List<INode> utterance = new ArrayList<INode>();
-		try {
-			utterance = GraphUtils.getNodesOfUtterance(graph);
-		} catch (MissingDataException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		List<BabelfyToken> bfTokens = prepareInput(utterance);
-
-		List<SemanticAnnotation> bfyAnnotations = bfy.babelfy(bfTokens, Language.EN);
-		int[] previousToken = new int[] { -1, -1 };
-		List<INode> nodes = null;
-		List<Pair<BabelSynset, Double>> senses = null;
-		List<Pair<BabelSynset, Double>> sequenceSenses = new ArrayList<>();
-
-		for (SemanticAnnotation semanticAnnotation : bfyAnnotations) {
-			// if change in Token range
-			if (!(semanticAnnotation.getTokenOffsetFragment().getEnd() == previousToken[1])
-					|| !(semanticAnnotation.getTokenOffsetFragment().getStart() == previousToken[0])) {
-				// if change from sequence to single Token p.e. (10,11) -> (11,11) save sequence tokens else reset them
-				if (semanticAnnotation.getTokenOffsetFragment().getEnd() == previousToken[1]) {
-					sequenceSenses = senses;
-				} else {
-					sequenceSenses = new ArrayList<>();
-				}
-				// if change write previous senses
-				if (senses != null && nodes != null) {
-					writeToNodes(nodes, senses, graph);
-				}
-				nodes = getNodesForAnnotation(semanticAnnotation, utterance);
-				senses = new ArrayList<>();
+		if (!checkExecutedBefore()) {
+			List<INode> utterance = new ArrayList<INode>();
+			try {
+				utterance = GraphUtils.getNodesOfUtterance(graph);
+			} catch (MissingDataException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
+			List<BabelfyToken> bfTokens = prepareInput(utterance);
 
-			// if sequence tokens present use them as sense
-			if (!sequenceSenses.isEmpty()) {
-				senses = sequenceSenses;
-			} else {
-				// if score is higher than 30% or sense spans over several tokens (sequence)
-				if (semanticAnnotation.getScore() > 0.3d || semanticAnnotation.getTokenOffsetFragment().getEnd()
-						- semanticAnnotation.getTokenOffsetFragment().getStart() > 0) {
-					try {
-						BabelSynset synset;
-						String synsetID = semanticAnnotation.getBabelSynsetID();
-						if (synsetID.endsWith("n")) {
+			List<SemanticAnnotation> bfyAnnotations = bfy.babelfy(bfTokens, Language.EN);
+			int[] previousToken = new int[] { -1, -1 };
+			List<INode> nodes = null;
+			List<Pair<BabelSynset, Double>> senses = null;
+			List<Pair<BabelSynset, Double>> sequenceSenses = new ArrayList<>();
 
-							if (synsets.containsKey(synsetID)) {
-								synset = synsets.get(synsetID);
-							} else {
-
-								synset = bn.getSynset(new BabelSynsetID(synsetID));
-								synsets.put(synsetID, synset);
-							}
-
-							senses.add(new Pair<BabelSynset, Double>(synset, semanticAnnotation.getScore()));
-						}
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (InvalidBabelSynsetIDException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+			for (SemanticAnnotation semanticAnnotation : bfyAnnotations) {
+				// if change in Token range
+				if (!(semanticAnnotation.getTokenOffsetFragment().getEnd() == previousToken[1])
+						|| !(semanticAnnotation.getTokenOffsetFragment().getStart() == previousToken[0])) {
+					// if change from sequence to single Token p.e. (10,11) -> (11,11) save sequence tokens else reset them
+					if (semanticAnnotation.getTokenOffsetFragment().getEnd() == previousToken[1]) {
+						sequenceSenses = senses;
+					} else {
+						sequenceSenses = new ArrayList<>();
 					}
-
+					// if change write previous senses
+					if (senses != null && nodes != null) {
+						writeToNodes(nodes, senses, graph);
+					}
+					nodes = getNodesForAnnotation(semanticAnnotation, utterance);
+					senses = new ArrayList<>();
 				}
-			}
-			previousToken[0] = semanticAnnotation.getTokenOffsetFragment().getStart();
-			previousToken[1] = semanticAnnotation.getTokenOffsetFragment().getEnd();
-		}
 
-		if (senses != null && nodes != null) {
-			writeToNodes(nodes, senses, graph);
+				// if sequence tokens present use them as sense
+				if (!sequenceSenses.isEmpty()) {
+					senses = sequenceSenses;
+				} else {
+					// if score is higher than 30% or sense spans over several tokens (sequence)
+					if (semanticAnnotation.getScore() > 0.3d || semanticAnnotation.getTokenOffsetFragment().getEnd()
+							- semanticAnnotation.getTokenOffsetFragment().getStart() > 0) {
+						try {
+							BabelSynset synset;
+							String synsetID = semanticAnnotation.getBabelSynsetID();
+							if (synsetID.endsWith("n")) {
+
+								if (synsets.containsKey(synsetID)) {
+									synset = synsets.get(synsetID);
+								} else {
+
+									synset = bn.getSynset(new BabelSynsetID(synsetID));
+									synsets.put(synsetID, synset);
+								}
+
+								senses.add(new Pair<BabelSynset, Double>(synset, semanticAnnotation.getScore()));
+							}
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (InvalidBabelSynsetIDException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+
+					}
+				}
+				previousToken[0] = semanticAnnotation.getTokenOffsetFragment().getStart();
+				previousToken[1] = semanticAnnotation.getTokenOffsetFragment().getEnd();
+			}
+
+			if (senses != null && nodes != null) {
+				writeToNodes(nodes, senses, graph);
+			}
+		}
+	}
+
+	private boolean checkExecutedBefore() {
+		if (graph.hasNodeType("token") && graph.getNodeType("token").containsAttribute("wnSynsetID", "String")) {
+			logger.info("Executed before, exiting!");
+			return true;
+		} else {
+			return false;
 		}
 	}
 
@@ -232,7 +244,6 @@ public class Wsd extends AbstractAgent {
 						node.setAttributeValue("bnScore", senses.get(0).getRight());
 					}
 					if (node.getAttributeValue("bfyResults") != null) {
-						@SuppressWarnings("unchecked")
 						List<Pair<String, Double>> graphResults = (List<Pair<String, Double>>) node.getAttributeValue("bfyResults");
 						if (results != null) {
 							if (!resultsEquals(results, graphResults)) {

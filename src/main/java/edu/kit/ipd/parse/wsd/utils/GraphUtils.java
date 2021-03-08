@@ -1,4 +1,5 @@
 package edu.kit.ipd.parse.wsd.utils;
+
 /**
  * 
  */
@@ -20,6 +21,7 @@ import edu.kit.ipd.parse.luna.graph.ParseGraph;
 
 /**
  * @author Tobias Hey
+ * @author Sebastian Weigelt
  *
  */
 public final class GraphUtils {
