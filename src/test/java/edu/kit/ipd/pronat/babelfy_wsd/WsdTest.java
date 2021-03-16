@@ -1,16 +1,16 @@
-package edu.kit.ipd.parse.wsd;
+package edu.kit.ipd.pronat.babelfy_wsd;
 
+import edu.kit.ipd.pronat.graph_builder.GraphBuilder;
+import edu.kit.ipd.pronat.prepipedatamodel.PrePipelineData;
+import edu.kit.ipd.pronat.prepipedatamodel.tools.StringToHypothesis;
+import edu.kit.ipd.pronat.shallow_nlp.ShallowNLP;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.kit.ipd.parse.graphBuilder.GraphBuilder;
 import edu.kit.ipd.parse.luna.data.MissingDataException;
-import edu.kit.ipd.parse.luna.data.PrePipelineData;
 import edu.kit.ipd.parse.luna.pipeline.PipelineStageException;
-import edu.kit.ipd.parse.luna.tools.StringToHypothesis;
-import edu.kit.ipd.parse.shallownlp.ShallowNLP;
 
 public class WsdTest {
 

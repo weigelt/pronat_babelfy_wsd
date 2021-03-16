@@ -1,4 +1,4 @@
-package edu.kit.ipd.parse.wsd.utils;
+package edu.kit.ipd.pronat.babelfy_wsd.utils;
 
 /**
  * 

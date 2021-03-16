@@ -1,4 +1,4 @@
-package edu.kit.ipd.parse.wsd;
+package edu.kit.ipd.pronat.babelfy_wsd;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,7 +20,7 @@ import edu.kit.ipd.parse.luna.data.MissingDataException;
 import edu.kit.ipd.parse.luna.graph.IGraph;
 import edu.kit.ipd.parse.luna.graph.INode;
 import edu.kit.ipd.parse.luna.graph.Pair;
-import edu.kit.ipd.parse.wsd.utils.GraphUtils;
+import edu.kit.ipd.pronat.babelfy_wsd.utils.GraphUtils;
 import it.uniroma1.lcl.babelfy.commons.BabelfyConfiguration;
 import it.uniroma1.lcl.babelfy.commons.BabelfyParameters;
 import it.uniroma1.lcl.babelfy.commons.BabelfyParameters.MCS;
