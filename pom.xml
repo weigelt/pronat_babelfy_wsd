@@ -12,14 +12,9 @@
     <name>Babelfy WSD</name>
     <repositories>
         <repository>
-            <id>ipdNexus-public-releases</id>
+            <id>ipdNexus-public-all</id>
             <name>IPD-Repository</name>
-            <url>http://bob.ipd.kit.edu/nexus/repository/maven-public-releases</url>
-        </repository>
-        <repository>
-            <id>ipdNexus-public-snapshots</id>
-            <name>IPD-Repository</name>
-            <url>http://bob.ipd.kit.edu/nexus/repository/maven-public-snapshots</url>
+            <url>https://bob.ipd.kit.edu/nexus/repository/maven-public-all</url>
         </repository>
     </repositories>
     <build>
